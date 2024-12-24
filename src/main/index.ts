@@ -4,6 +4,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import path from 'path'
+// import * as mm from 'music-metadata'
+import * as mm from "../../node_modules/music-metadata/lib/index"
 
 let mainWindow: BrowserWindow | null = null
 
@@ -67,13 +69,19 @@ app.whenReady().then(() => {
   })
 
 
-  ipcMain.handle('get-music-files', async (event, folderPath: string): Promise<string[]> => {
+  ipcMain.handle('get-music-files', async (event, folderPath: string): Promise<mm.IAudioMetadata[]> => {
     const musicExtensions: string[] = ['.mp3', '.wav', '.flac', '.m4a', '.ogg']
     try {
       const files = await fs.readdir(folderPath)
       const musicFiles = files.filter((file) => musicExtensions.includes(path.extname(file).toLowerCase()))
+      const musicFilesPath = musicFiles.map((file) => path.join(folderPath, file));
+      let metaDataFiles: mm.IAudioMetadata[] = [];
+      for (let file of musicFilesPath) {
+        const metaData: mm.IAudioMetadata = await mm.parseFile(file);
+        metaDataFiles.push(metaData);
+      }
 
-      return musicFiles;
+      return metaDataFiles;
     } catch (error) {
       console.error(error)
       return []

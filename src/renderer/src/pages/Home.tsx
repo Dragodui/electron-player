@@ -1,8 +1,11 @@
+import PageLayout from '@renderer/components/PageLayout'
 import Button from '@renderer/components/UI/Button'
+import TrackLayout from '@renderer/components/UI/TrackLayout'
+import { IAudioMetadata } from 'music-metadata'
 import { FC, useState } from 'react'
 
 const Home: FC = (): JSX.Element => {
-  const [music, setMusic] = useState<string[]>([])
+  const [music, setMusic] = useState<IAudioMetadata[]>([])
   const [folder, setFolder] = useState<string>('')
   const api = (window as any).api
 
@@ -14,6 +17,7 @@ const Home: FC = (): JSX.Element => {
       if (folderPath) {
         setFolder(folderPath)
         const files = await api.getMusicFiles(folderPath)
+        console.log(files)
         setMusic(files)
       }
     } catch (error) {
@@ -22,21 +26,19 @@ const Home: FC = (): JSX.Element => {
   }
 
   return (
-    <div>
+    <PageLayout>
       <h1 className="mb-[20px] text-2xl font-bold">
-        {folder ? `Music in ${folder}` : 'No folder selected'}
+        All songs
       </h1>
-      {music.length > 0 && (
-        <h1 className="text-xl mb-[10px] font-medium">Found {music.length} songs</h1>
-      )}
-      <div>
+      
+      <div className='flex flex-col gap-4'>
         {music.length > 0 && folder ? (
-          music.map((file, index) => <p key={index}>{file}</p>)
+          music.map((song, index) => <TrackLayout song={song} key={index} />)
         ) : (
           <Button onClick={handleFolderSelect}>Select Folder</Button>
         )}
       </div>
-    </div>
+    </PageLayout>
   )
 }
 
