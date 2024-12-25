@@ -7,7 +7,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button: FC<ButtonProps> = ({ children, addStyles, ...props }): JSX.Element => {
   return (
-    <button {...props} className="bg-[rgba(0,0,0,0.3)] px-5 py-3 fond-medium text-xl rounded-lg">
+    <button {...props} className={`bg-[rgba(0,0,0,0.3)] px-5 py-3 fond-medium text-xl rounded-lg ${addStyles}`}>
       {children}
     </button>
   )

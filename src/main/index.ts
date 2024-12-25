@@ -1,3 +1,4 @@
+import { ISongData } from '../types';
 import fs from 'fs/promises'
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
@@ -20,8 +21,9 @@ function createWindow(): void {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: true,
+      allowRunningInsecureContent: true,
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      // sandbox: false
     }
   })
 
@@ -57,9 +59,6 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
   ipcMain.handle('dialog:selectFolder', async () => {
     const result = await dialog.showOpenDialog(mainWindow!, {
       properties: ['openDirectory']
@@ -69,19 +68,21 @@ app.whenReady().then(() => {
   })
 
 
-  ipcMain.handle('get-music-files', async (event, folderPath: string): Promise<mm.IAudioMetadata[]> => {
+  ipcMain.handle('get-music-files', async (event, folderPath: string): Promise<ISongData[]> => {
     const musicExtensions: string[] = ['.mp3', '.wav', '.flac', '.m4a', '.ogg']
     try {
       const files = await fs.readdir(folderPath)
       const musicFiles = files.filter((file) => musicExtensions.includes(path.extname(file).toLowerCase()))
       const musicFilesPath = musicFiles.map((file) => path.join(folderPath, file));
-      let metaDataFiles: mm.IAudioMetadata[] = [];
+      let songs: ISongData[] = [];
       for (let file of musicFilesPath) {
         const metaData: mm.IAudioMetadata = await mm.parseFile(file);
-        metaDataFiles.push(metaData);
+        const src = `/music/${path.basename(file)}`;
+        const songData: ISongData = { metaData, src };
+        songs.push(songData);
       }
 
-      return metaDataFiles;
+      return songs;
     } catch (error) {
       console.error(error)
       return []

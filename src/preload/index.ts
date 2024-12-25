@@ -2,7 +2,11 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api = {}
+const api = {
+  getMusicFiles: async (folderPath: string) => ipcRenderer.invoke('get-music-files', folderPath),
+  selectFolder: async () => ipcRenderer.invoke('dialog:selectFolder'),
+}
+
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
@@ -13,10 +17,7 @@ const api = {}
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', {
-      getMusicFiles: async (folderPath: string) => ipcRenderer.invoke('get-music-files', folderPath),
-      selectFolder: async () => ipcRenderer.invoke('dialog:selectFolder')
-    })
+    contextBridge.exposeInMainWorld('api', api)
   } catch (error) {
     console.error(error)
   }
