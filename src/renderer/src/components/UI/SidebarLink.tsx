@@ -1,9 +1,9 @@
-import { FC } from 'react'
-import { Link } from 'react-router-dom'
+import { FC } from 'react';
+import { Link } from 'react-router-dom';
 
 interface SidebarLinkProps {
-  to: string
-  children: React.ReactNode
+  to: string;
+  children: React.ReactNode;
 }
 
 const SidebarLink: FC<SidebarLinkProps> = ({ to, children }): JSX.Element => {
@@ -14,7 +14,7 @@ const SidebarLink: FC<SidebarLinkProps> = ({ to, children }): JSX.Element => {
     >
       {children}
     </Link>
-  )
-}
+  );
+};
 
-export default SidebarLink
+export default SidebarLink;

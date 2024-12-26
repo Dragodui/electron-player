@@ -1,6 +1,6 @@
-import { FC } from 'react'
-import SidebarLink from './UI/SidebarLink'
-import electronLogo from '../assets/electron.svg'
+import { FC } from 'react';
+import SidebarLink from './UI/SidebarLink';
+import electronLogo from '../assets/electron.svg';
 
 const SidebarPanel: FC = (): JSX.Element => {
   return (
@@ -13,7 +13,7 @@ const SidebarPanel: FC = (): JSX.Element => {
         <SidebarLink to="/">All Songs</SidebarLink>
       </nav>
     </header>
-  )
-}
+  );
+};
 
-export default SidebarPanel
+export default SidebarPanel;

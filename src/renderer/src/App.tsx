@@ -1,7 +1,7 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
-import SidebarPanel from './components/SidebarPanel'
-import './index.css'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home';
+import SidebarPanel from './components/SidebarPanel';
+import './index.css';
 
 function App(): JSX.Element {
   return (
@@ -11,7 +11,7 @@ function App(): JSX.Element {
         <Route path="/" element={<Home />} />
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,39 +1,39 @@
-import MusicPlayer from '@renderer/components/MusicPlayer'
-import PageLayout from '@renderer/components/PageLayout'
-import Button from '@renderer/components/UI/Button'
-import TrackLayout from '@renderer/components/UI/TrackLayout'
-import { FC, useEffect, useState } from 'react'
-import { ISongData } from '../../../types'
+import MusicPlayer from '@renderer/components/MusicPlayer';
+import PageLayout from '@renderer/components/PageLayout';
+import Button from '@renderer/components/UI/Button';
+import TrackLayout from '@renderer/components/UI/TrackLayout';
+import { FC, useEffect, useState } from 'react';
+import { ISongData } from '../../../types';
 
 const Home: FC = (): JSX.Element => {
-  const [songs, setSongs] = useState<ISongData[]>([])
-  const [folder, setFolder] = useState<string>('')
-  const [currentSongIndex, setCurrentSongIndex] = useState<number>(-1)
-  const api = (window as any).api
+  const [songs, setSongs] = useState<ISongData[]>([]);
+  const [folder, setFolder] = useState<string>('');
+  const [currentSongIndex, setCurrentSongIndex] = useState<number>(-1);
+  const api = (window as any).api;
 
   const handleFolderSelect = async () => {
     try {
-      const folderPath = await api.selectFolder()
+      const folderPath = await api.selectFolder();
       if (folderPath) {
-        setFolder(folderPath)
-        const files = await api.getMusicFiles(folderPath)
-        setSongs(files)
+        setFolder(folderPath);
+        const files = await api.getMusicFiles(folderPath);
+        setSongs(files);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const handlePreviousSong = () => {
-    setCurrentSongIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : songs.length - 1))
-  }
+    setCurrentSongIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : songs.length - 1));
+  };
 
   const handleNextSong = () => {
-    setCurrentSongIndex((prevIndex) => (prevIndex < songs.length - 1 ? prevIndex + 1 : 0))
-  }
-  
+    setCurrentSongIndex((prevIndex) => (prevIndex < songs.length - 1 ? prevIndex + 1 : 0));
+  };
+
   useEffect(() => {
-setCurrentSongIndex(-1);
+    setCurrentSongIndex(-1);
   }, []);
 
   return (
@@ -45,7 +45,7 @@ setCurrentSongIndex(-1);
           songs.map((song, index) => (
             <TrackLayout
               onClick={() => {
-                setCurrentSongIndex(index)
+                setCurrentSongIndex(index);
               }}
               song={song}
               key={index}
@@ -68,7 +68,7 @@ setCurrentSongIndex(-1);
         onNext={handleNextSong}
       />
     </PageLayout>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
