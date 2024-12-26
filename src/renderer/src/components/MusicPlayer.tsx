@@ -25,7 +25,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({ song }): JSX.Element => {
   }
 
   if (!song) {
-    return <p>No song</p>
+    return <p></p>
   }
 
   return (

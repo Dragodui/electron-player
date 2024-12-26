@@ -2,8 +2,9 @@ import MusicPlayer from '@renderer/components/MusicPlayer'
 import PageLayout from '@renderer/components/PageLayout'
 import Button from '@renderer/components/UI/Button'
 import TrackLayout from '@renderer/components/UI/TrackLayout'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { ISongData } from '../../../types'
+import path from 'path';
 
 const Home: FC = (): JSX.Element => {
   const [songs, setSongs] = useState<ISongData[]>([])
@@ -24,6 +25,16 @@ const Home: FC = (): JSX.Element => {
     }
   }
 
+  // const loadMusicFiles = async () => {
+  //   const musicPath = "/music";
+  //   const files = await api.getMusicFiles(musicPath)
+  //   setSongs(files)
+  // }
+
+  // useEffect(() => {
+  //   loadMusicFiles();
+  // }, []);
+  
   return (
     <PageLayout>
       <h1 className="mb-[20px] text-2xl font-bold">All songs</h1>
@@ -43,6 +54,7 @@ const Home: FC = (): JSX.Element => {
           <Button addStyles="mt-[100px]" onClick={handleFolderSelect}>
             Select Folder
           </Button>
+          // <p>No songs in the folder</p>
         )}
       </div>
       <MusicPlayer song={currentSong} />

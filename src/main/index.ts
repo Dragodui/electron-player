@@ -71,6 +71,9 @@ app.whenReady().then(() => {
   ipcMain.handle('get-music-files', async (event, folderPath: string): Promise<ISongData[]> => {
     const musicExtensions: string[] = ['.mp3', '.wav', '.flac', '.m4a', '.ogg']
     try {
+      
+      const projectRoot = path.resolve(__dirname, '..');
+      console.log(projectRoot)
       const files = await fs.readdir(folderPath)
       const musicFiles = files.filter((file) => musicExtensions.includes(path.extname(file).toLowerCase()))
       const musicFilesPath = musicFiles.map((file) => path.join(folderPath, file));

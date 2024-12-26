@@ -1,7 +1,5 @@
-import { IAudioMetadata } from 'music-metadata';
 import { FC, useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
-import { Play, Pause } from 'lucide-react'; 
 import { ISongData } from '../../../../types';
 
 interface TrackLayoutProps {
