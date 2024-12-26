@@ -10,9 +10,7 @@ const SidebarPanel: FC = (): JSX.Element => {
         <h1 className="text-xl font-bold">Electron Player</h1>
       </div>
       <nav className="flex flex-col gap-3 w-full">
-        <SidebarLink to="/">Home</SidebarLink>
-        <SidebarLink to="/favorites">Favorites</SidebarLink>
-        <SidebarLink to="/playlists">Playlists</SidebarLink>
+        <SidebarLink to="/">All Songs</SidebarLink>
       </nav>
     </header>
   )

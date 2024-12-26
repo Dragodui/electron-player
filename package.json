@@ -27,12 +27,14 @@
     "@shadcn/ui": "^0.0.4",
     "@types/howler": "^2.2.12",
     "autoprefixer": "^10.4.20",
+    "better-sqlite3": "^11.7.0",
     "clsx": "^2.1.1",
     "electron-updater": "^6.1.7",
     "howler": "^2.2.4",
     "lucide-react": "^0.469.0",
     "music-metadata": "^10.6.4",
     "react-router-dom": "^7.1.0",
+    "sqlite3": "^5.1.7",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {

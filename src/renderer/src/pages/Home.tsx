@@ -25,20 +25,20 @@ const Home: FC = (): JSX.Element => {
   }
 
   const handlePreviousSong = () => {
-    setCurrentSongIndex((prevIndex) => 
-      prevIndex > 0 ? prevIndex - 1 : songs.length - 1
-    )
+    setCurrentSongIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : songs.length - 1))
   }
 
   const handleNextSong = () => {
-    setCurrentSongIndex((prevIndex) => 
-      prevIndex < songs.length - 1 ? prevIndex + 1 : 0
-    )
+    setCurrentSongIndex((prevIndex) => (prevIndex < songs.length - 1 ? prevIndex + 1 : 0))
   }
   
+  useEffect(() => {
+setCurrentSongIndex(-1);
+  }, []);
+
   return (
     <PageLayout>
-      <h1 className="mb-[20px] text-2xl font-bold">All songs</h1>
+      <h1 className="mb-[20px] text-4xl font-bold">All songs</h1>
 
       <div className="flex flex-col gap-4 items-center justify-center ">
         {songs.length > 0 && folder ? (
@@ -49,7 +49,11 @@ const Home: FC = (): JSX.Element => {
               }}
               song={song}
               key={index}
-              addStyles={`${song.src === songs[currentSongIndex].src ? 'bg-blue-500' : 'bg-gray-800'}`}
+              addStyles={
+                currentSongIndex !== -1 && song.src === songs[currentSongIndex].src
+                  ? 'bg-blue-500'
+                  : 'bg-gray-800'
+              }
             />
           ))
         ) : (
@@ -58,8 +62,8 @@ const Home: FC = (): JSX.Element => {
           </Button>
         )}
       </div>
-      <MusicPlayer 
-        song={currentSongIndex !== -1 ? songs[currentSongIndex] : null} 
+      <MusicPlayer
+        song={currentSongIndex !== -1 ? songs[currentSongIndex] : null}
         onPrevious={handlePreviousSong}
         onNext={handleNextSong}
       />

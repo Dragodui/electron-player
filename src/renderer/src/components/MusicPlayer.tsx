@@ -73,9 +73,6 @@ const MusicPlayer: FC<MusicPlayerProps> = ({ song, onPrevious, onNext }): JSX.El
               <div className="text-sm text-gray-400">{song.metaData.common.artist || "Unknown Artist"}</div>
             </div>
           </div>
-          <div className="text-sm font-medium text-white">
-            {formatTime(currentTime)} / {formatTime(duration)}
-          </div>
           <VolumeSlider
               value={[volume]}
               max={1}

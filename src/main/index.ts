@@ -5,10 +5,11 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import path from 'path'
-// import * as mm from 'music-metadata'
 import * as mm from "../../node_modules/music-metadata/lib/index"
+import db from './db';
 
-let mainWindow: BrowserWindow | null = null
+let mainWindow: BrowserWindow | null = null;
+
 
 function createWindow(): void {
   // Create the browser window.
@@ -72,8 +73,8 @@ app.whenReady().then(() => {
     const musicExtensions: string[] = ['.mp3', '.wav', '.flac', '.m4a', '.ogg']
     try {
       
-      const projectRoot = path.resolve(__dirname, '..');
-      console.log(projectRoot)
+      // const projectRoot = path.resolve(__dirname, '..');    update in future
+      // console.log(projectRoot)
       const files = await fs.readdir(folderPath)
       const musicFiles = files.filter((file) => musicExtensions.includes(path.extname(file).toLowerCase()))
       const musicFilesPath = musicFiles.map((file) => path.join(folderPath, file));
