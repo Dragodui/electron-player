@@ -4,12 +4,12 @@ import { ISongData } from '../../../../types';
 
 interface TrackLayoutProps {
     song: ISongData;
-    onClick: () => void
+    onClick: () => void;
+    addStyles?: string;
 }
 
-const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick }): JSX.Element => {
+const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.Element => {
     const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
-    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
         const picture = song.metaData.common.picture;
@@ -24,11 +24,6 @@ const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick }): JSX.Element => {
         }
     }, [song]);
 
-    const handlePlayPause = () => {
-        setIsPlaying(!isPlaying);
-        // here will be the playing logic
-    };
-
     const formatDuration = (duration: number | undefined) => {
         if (!duration) return "00:00";
         const minutes = Math.floor(duration / 60);
@@ -37,7 +32,7 @@ const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick }): JSX.Element => {
     };
 
     return (
-        <div onClick={onClick} className="cursor-pointer flex items-center w-full gap-4 bg-gray-800 text-white p-4 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+        <div onClick={onClick} className={`cursor-pointer flex items-center w-full gap-4 text-white p-4 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ${addStyles}`}>
             <div className="flex-shrink-0 w-11 h-11 sm:w-11 sm:h-11 rounded-md overflow-hidden bg-gray-600">
                 {imageSrc ? (
                     <img src={imageSrc} alt="Album cover" className="w-full h-full object-cover" />

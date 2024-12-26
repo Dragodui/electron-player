@@ -23,19 +23,23 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "@radix-ui/react-slider": "^1.2.2",
+    "@shadcn/ui": "^0.0.4",
     "@types/howler": "^2.2.12",
     "autoprefixer": "^10.4.20",
+    "clsx": "^2.1.1",
     "electron-updater": "^6.1.7",
     "howler": "^2.2.4",
     "lucide-react": "^0.469.0",
     "music-metadata": "^10.6.4",
-    "react-router-dom": "^7.1.0"
+    "react-router-dom": "^7.1.0",
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@types/node": "^20.14.8",
+    "@types/node": "^20.17.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

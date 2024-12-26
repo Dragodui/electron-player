@@ -4,12 +4,11 @@ import Button from '@renderer/components/UI/Button'
 import TrackLayout from '@renderer/components/UI/TrackLayout'
 import { FC, useEffect, useState } from 'react'
 import { ISongData } from '../../../types'
-import path from 'path';
 
 const Home: FC = (): JSX.Element => {
   const [songs, setSongs] = useState<ISongData[]>([])
   const [folder, setFolder] = useState<string>('')
-  const [currentSong, setCurrentSong] = useState<ISongData | null>(null)
+  const [currentSongIndex, setCurrentSongIndex] = useState<number>(-1)
   const api = (window as any).api
 
   const handleFolderSelect = async () => {
@@ -25,15 +24,17 @@ const Home: FC = (): JSX.Element => {
     }
   }
 
-  // const loadMusicFiles = async () => {
-  //   const musicPath = "/music";
-  //   const files = await api.getMusicFiles(musicPath)
-  //   setSongs(files)
-  // }
+  const handlePreviousSong = () => {
+    setCurrentSongIndex((prevIndex) => 
+      prevIndex > 0 ? prevIndex - 1 : songs.length - 1
+    )
+  }
 
-  // useEffect(() => {
-  //   loadMusicFiles();
-  // }, []);
+  const handleNextSong = () => {
+    setCurrentSongIndex((prevIndex) => 
+      prevIndex < songs.length - 1 ? prevIndex + 1 : 0
+    )
+  }
   
   return (
     <PageLayout>
@@ -44,20 +45,24 @@ const Home: FC = (): JSX.Element => {
           songs.map((song, index) => (
             <TrackLayout
               onClick={() => {
-                setCurrentSong(song)
+                setCurrentSongIndex(index)
               }}
               song={song}
               key={index}
+              addStyles={`${song.src === songs[currentSongIndex].src ? 'bg-blue-500' : 'bg-gray-800'}`}
             />
           ))
         ) : (
           <Button addStyles="mt-[100px]" onClick={handleFolderSelect}>
             Select Folder
           </Button>
-          // <p>No songs in the folder</p>
         )}
       </div>
-      <MusicPlayer song={currentSong} />
+      <MusicPlayer 
+        song={currentSongIndex !== -1 ? songs[currentSongIndex] : null} 
+        onPrevious={handlePreviousSong}
+        onNext={handleNextSong}
+      />
     </PageLayout>
   )
 }
