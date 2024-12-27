@@ -6,6 +6,10 @@ import { FC, useEffect, useState } from 'react';
 import { ISongData } from '../../../types';
 import Loader from '@renderer/components/UI/Loader';
 
+// interface HomeProps {
+//   songs: ISongData[];
+// }
+
 const Home: FC = (): JSX.Element => {
   const [songs, setSongs] = useState<ISongData[]>([]);
   const [currentSongIndex, setCurrentSongIndex] = useState<number>(-1);

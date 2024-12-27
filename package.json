@@ -24,6 +24,7 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@radix-ui/react-slider": "^1.2.2",
+    "@reduxjs/toolkit": "^2.5.0",
     "@shadcn/ui": "^0.0.4",
     "@types/howler": "^2.2.12",
     "autoprefixer": "^10.4.20",
@@ -33,6 +34,7 @@
     "howler": "^2.2.4",
     "lucide-react": "^0.469.0",
     "music-metadata": "^10.6.4",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.0",
     "sqlite3": "^5.1.7",
     "tailwind-merge": "^2.6.0"

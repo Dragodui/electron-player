@@ -129,19 +129,68 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('add-song-to-favorite', async (event, songSrc: string): Promise<void> => {
+  ipcMain.handle('toggle-favorite-song', async (event, songSrc: string): Promise<void> => {
+    const getIsInFavorite = (): Promise<boolean> => {
+      const projectRoot: string = path.resolve(__dirname, '../music');
+      const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
+      return new Promise((resolve, reject) => {
+        db?.get('SELECT 1 FROM favoriteSongs WHERE src = ?', [databaseSrc], (error, row) => {
+          if (error) {
+            console.error('Error checking song in favorites:', error);
+            reject(error);
+          } else {
+            resolve(!!row);
+          }
+        });
+      });
+    };
+
     try {
       const projectRoot: string = path.resolve(__dirname, '../music');
       const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
+      const isInFavorite = await getIsInFavorite();
+
       db?.serialize(() => {
-        db.run('INSERT INTO favoriteSongs (src) VALUES (?)', [databaseSrc], (error) => {
+        if (isInFavorite) {
+          db.run('DELETE FROM favoriteSongs WHERE src = ?', [databaseSrc], (error) => {
+            if (error) {
+              console.error('Error while removing song from favorites:', error);
+            } else {
+              console.log('Song removed from favorites:', songSrc);
+            }
+          });
+        } else {
+          db.run('INSERT INTO favoriteSongs (src) VALUES (?)', [databaseSrc], (error) => {
+            if (error) {
+              console.error('Error while adding song to favorites:', error);
+            } else {
+              console.log('Song added to favorites:', songSrc);
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error toggling favorite status:', error);
+    }
+  });
+
+  ipcMain.handle('check-song-in-favorite', async (event, songSrc: string): Promise<boolean> => {
+    try {
+      const projectRoot: string = path.resolve(__dirname, '../music');
+      const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
+      return new Promise((resolve, reject) => {
+        db?.get('SELECT * FROM favoriteSongs WHERE src = ?', [databaseSrc], (error, row) => {
           if (error) {
-            console.error('Error while adding song to favorite:', error);
+            console.error('Error while checking song in favorite:', error);
+            reject(error);
+          } else {
+            resolve(row ? true : false);
           }
         });
       });
     } catch (error) {
       console.error(error);
+      return false;
     }
   });
 

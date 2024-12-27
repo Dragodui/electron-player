@@ -12,12 +12,14 @@ interface TrackLayoutProps {
 
 const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.Element => {
   const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const api = (window as any).api;
 
-  const addSongToFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const ToggleFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       e.stopPropagation();
-      await api.addToFavorite(song.src);
+      await api.toggleFavorite(song.src);
+      await checkIfFavorite();
     } catch (error) {
       console.error(error);
     }
@@ -35,6 +37,20 @@ const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.El
       setImageSrc(imageSrc);
     }
   }, [song]);
+
+  useEffect(() => {
+    checkIfFavorite();
+  }, []);
+
+  const checkIfFavorite = async () => {
+    try {
+      const isFav = await api.checkIfFavorite(song.src);
+      console.log(isFav);
+      setIsFavorite(isFav);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const formatDuration = (duration: number | undefined) => {
     if (!duration) return '00:00';
@@ -69,10 +85,13 @@ const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.El
         </p>
       </div>
       <Button
-        onClick={(e: React.MouseEvent<HTMLButtonElement>) => addSongToFavorite(e)}
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => ToggleFavorite(e)}
         addStyles="px-2 py-2"
       >
-        <Heart />
+        <Heart
+          color={`${isFavorite ? '#ff0061' : ''}`}
+          fill={`${isFavorite ? '#ff0061' : 'white'}`}
+        />
       </Button>
       <div className="flex items-center gap-4">
         <p className="text-sm text-gray-400">{formatDuration(song.metaData.format.duration)}</p>
