@@ -6,9 +6,10 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import path from 'path';
 import * as mm from '../../node_modules/music-metadata/lib/index';
-import './db';
+import { initializeDB } from './db';
 
 let mainWindow: BrowserWindow | null = null;
+const db = initializeDB();
 
 function createWindow(): void {
   // Create the browser window.
@@ -36,8 +37,6 @@ function createWindow(): void {
     return { action: 'deny' };
   });
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
   } else {
@@ -45,16 +44,9 @@ function createWindow(): void {
   }
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window);
   });
@@ -67,18 +59,30 @@ app.whenReady().then(() => {
     return result.canceled ? null : result.filePaths[0];
   });
 
-  ipcMain.handle('get-music-files', async (event, folderPath: string): Promise<ISongData[]> => {
-    const musicExtensions: string[] = ['.mp3', '.wav', '.flac', '.m4a', '.ogg'];
+  ipcMain.handle('get-music-db', async (event): Promise<ISongData[]> => {
     try {
-      // const projectRoot = path.resolve(__dirname, '..');    update in future
-      // console.log(projectRoot)
-      const files = await fs.readdir(folderPath);
-      const musicFiles = files.filter((file) =>
-        musicExtensions.includes(path.extname(file).toLowerCase())
-      );
-      const musicFilesPath = musicFiles.map((file) => path.join(folderPath, file));
-      let songs: ISongData[] = [];
-      for (let file of musicFilesPath) {
+      interface SongRow {
+        src: string;
+      }
+
+      const getSongsFromDB = (): Promise<string[]> => {
+        return new Promise((resolve, reject) => {
+          db?.all('SELECT src FROM allSongs', [], (error, rows: SongRow[]) => {
+            if (error) {
+              console.error('Error getting songs from database: ', error);
+              reject(error);
+            } else {
+              const paths: string[] = rows.map((row) => row.src);
+              resolve(paths);
+            }
+          });
+        });
+      };
+
+      const paths = await getSongsFromDB();
+      const songs: ISongData[] = [];
+
+      for (const file of paths) {
         const metaData: mm.IAudioMetadata = await mm.parseFile(file);
         const src = `/music/${path.basename(file)}`;
         const songData: ISongData = { metaData, src };
@@ -92,23 +96,64 @@ app.whenReady().then(() => {
     }
   });
 
+  ipcMain.handle('get-music-files', async (event): Promise<ISongData[]> => {
+    const musicExtensions: string[] = ['.mp3', '.wav', '.flac', '.m4a', '.ogg'];
+    try {
+      const projectRoot = path.resolve(__dirname, '../music');
+      const files = await fs.readdir(projectRoot);
+      const musicFiles = files.filter((file) =>
+        musicExtensions.includes(path.extname(file).toLowerCase())
+      );
+      const musicFilesPath = musicFiles.map((file) => path.join(projectRoot, file));
+      let songs: ISongData[] = [];
+      for (let file of musicFilesPath) {
+        const metaData: mm.IAudioMetadata = await mm.parseFile(file);
+        const src = `/music/${path.basename(file)}`;
+        const sqlSrc = path.join(projectRoot, path.basename(file));
+
+        db?.serialize(() => {
+          db.run(`INSERT INTO allSongs (src) VALUES (?)`, [sqlSrc], (error) => {
+            if (error) {
+              console.error('Error inserting data into the database:', error);
+            }
+          });
+        });
+        const songData: ISongData = { metaData, src };
+        songs.push(songData);
+      }
+
+      return songs;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  });
+
+  ipcMain.handle('add-song-to-favorite', async (event, songSrc: string): Promise<void> => {
+    try {
+      const projectRoot: string = path.resolve(__dirname, '../music');
+      const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
+      db?.serialize(() => {
+        db.run('INSERT INTO favoriteSongs (src) VALUES (?)', [databaseSrc], (error) => {
+          if (error) {
+            console.error('Error while adding song to favorite:', error);
+          }
+        });
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
   createWindow();
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.

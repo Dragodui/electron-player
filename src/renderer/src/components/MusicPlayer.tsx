@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from 'react';
 import { useAudio } from '../hooks/useAudio';
-import { Play, Pause, Volume2, SkipBack, SkipForward } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { ISongData } from '../../../types';
 import { AudioSlider } from './UI/AudioSlider';
 import { VolumeSlider } from './UI/VolumeSlider';
+import { formatTime } from '@renderer/utils/formatTime';
 
 interface MusicPlayerProps {
   song: ISongData | null;
@@ -16,18 +17,12 @@ const MusicPlayer: FC<MusicPlayerProps> = ({ song, onPrevious, onNext }): JSX.El
     useAudio(song ? song.src : '');
   const [isMuted, setIsMuted] = useState(false);
   const [prevVolume, setPrevVolume] = useState(0.4);
+
   useEffect(() => {
     if (song) {
-      console.log('Playing song:', song.src);
       handleVolumeChange(0.4);
     }
   }, [song]);
-
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
 
   const handleToggleMute = () => {
     if (isMuted) {
@@ -41,7 +36,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({ song, onPrevious, onNext }): JSX.El
   };
 
   if (!song) {
-    return <p></p>;
+    return <></>;
   }
 
   return (

@@ -1,6 +1,8 @@
 import { FC, useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
 import { ISongData } from '../../../../types';
+import Button from './Button';
+import { Heart } from 'lucide-react';
 
 interface TrackLayoutProps {
   song: ISongData;
@@ -10,6 +12,16 @@ interface TrackLayoutProps {
 
 const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.Element => {
   const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+  const api = (window as any).api;
+
+  const addSongToFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    try {
+      e.stopPropagation();
+      await api.addToFavorite(song.src);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const picture = song.metaData.common.picture;
@@ -56,16 +68,14 @@ const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.El
           {song.metaData.common.artist ? song.metaData.common.artist : 'Unknown Artist'}
         </p>
       </div>
-
+      <Button
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => addSongToFavorite(e)}
+        addStyles="px-2 py-2"
+      >
+        <Heart />
+      </Button>
       <div className="flex items-center gap-4">
         <p className="text-sm text-gray-400">{formatDuration(song.metaData.format.duration)}</p>
-
-        {/* <button
-                    className="w-10 h-10 flex items-center justify-center bg-blue-400 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                    onClick={handlePlayPause}
-                >
-                    {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                </button> */}
       </div>
     </div>
   );

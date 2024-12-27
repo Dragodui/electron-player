@@ -7,18 +7,13 @@ import { ISongData } from '../../../types';
 
 const Home: FC = (): JSX.Element => {
   const [songs, setSongs] = useState<ISongData[]>([]);
-  const [folder, setFolder] = useState<string>('');
   const [currentSongIndex, setCurrentSongIndex] = useState<number>(-1);
   const api = (window as any).api;
 
   const handleFolderSelect = async () => {
     try {
-      const folderPath = await api.selectFolder();
-      if (folderPath) {
-        setFolder(folderPath);
-        const files = await api.getMusicFiles(folderPath);
-        setSongs(files);
-      }
+      const files = await api.getMusicFiles();
+      setSongs(files);
     } catch (error) {
       console.error(error);
     }
@@ -32,16 +27,29 @@ const Home: FC = (): JSX.Element => {
     setCurrentSongIndex((prevIndex) => (prevIndex < songs.length - 1 ? prevIndex + 1 : 0));
   };
 
+  const loadSongsFromDB = async () => {
+    try {
+      const songsFromDB: ISongData[] = await api.getMusicFromDB();
+      setSongs(songsFromDB);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
+    loadSongsFromDB();
     setCurrentSongIndex(-1);
   }, []);
 
   return (
     <PageLayout>
-      <h1 className="mb-[20px] text-4xl font-bold">All songs</h1>
+      <header className="flex justify-between items-center mb-[20px]">
+        <h1 className="text-4xl font-bold">All songs</h1>
+        <Button onClick={handleFolderSelect}>Update Songs</Button>
+      </header>
 
       <div className="flex flex-col gap-4 items-center justify-center ">
-        {songs.length > 0 && folder ? (
+        {songs.length > 0 ? (
           songs.map((song, index) => (
             <TrackLayout
               onClick={() => {
