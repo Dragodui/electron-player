@@ -27,7 +27,6 @@
     "@shadcn/ui": "^0.0.4",
     "@types/howler": "^2.2.12",
     "autoprefixer": "^10.4.20",
-    "better-sqlite3": "^11.7.0",
     "clsx": "^2.1.1",
     "electron-updater": "^6.1.7",
     "howler": "^2.2.4",
