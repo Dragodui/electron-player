@@ -77,7 +77,7 @@ app.whenReady().then(() => {
     return result.canceled ? null : result.filePaths[0];
   });
 
-  ipcMain.handle('get-music-db', async (event): Promise<ISongData[]> => {
+  ipcMain.handle('get-music-db', async (_event): Promise<ISongData[]> => {
     const musicExtensions: string[] = ['.mp3', '.wav', '.flac', '.m4a', '.ogg'];
     try {
       //songs form database
@@ -132,7 +132,7 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('toggle-favorite-song', async (event, songSrc: string): Promise<void> => {
+  ipcMain.handle('toggle-favorite-song', async (_event, songSrc: string): Promise<void> => {
     const getIsInFavorite = (): Promise<boolean> => {
       const projectRoot: string = path.resolve(__dirname, '../music');
       const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
@@ -173,7 +173,7 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('check-song-in-favorite', async (event, songSrc: string): Promise<boolean> => {
+  ipcMain.handle('check-song-in-favorite', async (_event, songSrc: string): Promise<boolean> => {
     try {
       const projectRoot: string = path.resolve(__dirname, '../music');
       const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
@@ -193,7 +193,7 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('get-favorite-songs', async (event): Promise<ISongData[]> => {
+  ipcMain.handle('get-favorite-songs', async (_event): Promise<ISongData[]> => {
     try {
       interface SongRow {
         src: string;

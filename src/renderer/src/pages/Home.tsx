@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useState, useEffect } from 'react';
+import { ChangeEvent, FC, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@renderer/store/store';
 import { setCurrentSong } from '@renderer/store/slices/currentSongSlice';
