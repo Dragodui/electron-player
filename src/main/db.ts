@@ -25,6 +25,7 @@ export const initializeDB = (): Database | null => {
     db.serialize(() => {
       db.run('CREATE TABLE IF NOT EXISTS allSongs (id INTEGER PRIMARY KEY, src TEXT)');
       db.run('CREATE TABLE IF NOT EXISTS favoriteSongs (id INTEGER PRIMARY KEY, src TEXT)');
+      db.run('CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY, src TEXT)');
     });
     return db;
   } catch (error) {

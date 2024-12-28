@@ -17,6 +17,7 @@ interface HomeProps {
 const Home: FC<HomeProps> = ({ songs, loading, currentCategory }): JSX.Element => {
   const currentSong = useSelector((state: RootState) => state.currentSong.currentSong);
   const dispatch = useDispatch();
+  const api = (window as any).api;
   const [songsToDisplay, setSongsToDisplay] = useState<ISongData[]>(songs);
   const [searchValue, setSearchValue] = useState<string>('');
 
@@ -31,6 +32,18 @@ const Home: FC<HomeProps> = ({ songs, loading, currentCategory }): JSX.Element =
       case 'all':
       default:
         return 'All Songs';
+    }
+  };
+
+  const handleCurrentSong = async (song: ISongData) => {
+    try {
+      dispatch(setCurrentSong(song));
+      setTimeout(async () => {
+        await api.addSongToHistory(song.src);
+        console.log('ADDED TO HISTORY');
+      }, 60 * 1000);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -62,9 +75,7 @@ const Home: FC<HomeProps> = ({ songs, loading, currentCategory }): JSX.Element =
         ) : songsToDisplay.length > 0 ? (
           songsToDisplay.map((song, index) => (
             <TrackLayout
-              onClick={() => {
-                dispatch(setCurrentSong(song));
-              }}
+              onClick={() => handleCurrentSong(song)}
               song={song}
               key={index}
               addStyles={

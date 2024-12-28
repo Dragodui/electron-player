@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import SidebarLink from './UI/SidebarLink';
 import electronLogo from '../assets/electron.svg';
+import { Link } from 'react-router-dom';
 
 interface SidebarPanelProps {
   onCategoryChange: (category: string) => void;
@@ -26,6 +27,13 @@ const SidebarPanel: FC<SidebarPanelProps> = ({
           active={currentCategory === 'favorites'}
         >
           Favorites
+        </SidebarLink>
+        <SidebarLink
+          to="/stats"
+          onClick={() => onCategoryChange('stats')}
+          active={currentCategory === 'stats'}
+        >
+          Stats
         </SidebarLink>
       </nav>
     </header>

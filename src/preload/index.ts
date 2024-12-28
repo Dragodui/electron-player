@@ -8,7 +8,9 @@ const api = {
   getMusicFromDB: async () => ipcRenderer.invoke('get-music-db'),
   toggleFavorite: async (songSrc: string) => ipcRenderer.invoke('toggle-favorite-song', songSrc),
   checkIfFavorite: async (songSrc: string) => ipcRenderer.invoke('check-song-in-favorite', songSrc),
-  getFavoriteSongs: async () => ipcRenderer.invoke('get-favorite-songs')
+  getFavoriteSongs: async () => ipcRenderer.invoke('get-favorite-songs'),
+  addSongToHistory: async (songSrc: string) => ipcRenderer.invoke('add-song-to-history', songSrc),
+  getSongsFromHistory: async () => ipcRenderer.invoke('get-history'),
 };
 
 if (process.contextIsolated) {

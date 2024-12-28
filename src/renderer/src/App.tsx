@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import SidebarPanel from './components/SidebarPanel';
 import './index.css';
@@ -8,6 +9,7 @@ import { setCurrentSong } from './store/slices/currentSongSlice';
 import { useEffect, useState } from 'react';
 import { ISongData } from 'src/types';
 import { setSongs } from './store/slices/songsSlice';
+import Stats from './pages/Stats';
 
 function App(): JSX.Element {
   const currentSong = useSelector((state: RootState) => state.currentSong.currentSong);
@@ -68,9 +70,17 @@ function App(): JSX.Element {
 
   return (
     <>
-      <SidebarPanel onCategoryChange={handleCategoryChange} currentCategory={currentCategory} />
-      <Home songs={songs} loading={loading} currentCategory={currentCategory} />
-      <MusicPlayer song={currentSong} onPrevious={handlePreviousSong} onNext={handleNextSong} />
+      <Router>
+        <SidebarPanel onCategoryChange={handleCategoryChange} currentCategory={currentCategory} />
+        <MusicPlayer song={currentSong} onPrevious={handlePreviousSong} onNext={handleNextSong} />
+        <Routes>
+          <Route
+            path="/"
+            element={<Home songs={songs} loading={loading} currentCategory={currentCategory} />}
+          />
+          <Route path="stats" element={<Stats />} />
+        </Routes>
+      </Router>
     </>
   );
 }

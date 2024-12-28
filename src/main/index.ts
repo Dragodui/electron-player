@@ -195,10 +195,6 @@ app.whenReady().then(() => {
 
   ipcMain.handle('get-favorite-songs', async (_event): Promise<ISongData[]> => {
     try {
-      interface SongRow {
-        src: string;
-      }
-
       const getSongsFromDB = (): Promise<string[]> => {
         return new Promise((resolve, reject) => {
           db?.all('SELECT src FROM favoriteSongs', [], (error, rows: SongRow[]) => {
@@ -223,6 +219,51 @@ app.whenReady().then(() => {
         songs.push(songData);
       }
 
+      return songs;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  });
+
+  ipcMain.handle('add-song-to-history', async (_event, songSrc: string): Promise<void> => {
+    const projectRoot: string = path.resolve(__dirname, '../music');
+    const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
+    db?.serialize(() => {
+      db?.run('INSERT INTO history (src) VALUES (?)', [databaseSrc], (error) => {
+        if (error) {
+          console.error('Error while adding song to history:', error);
+        }
+      });
+    });
+  });
+
+  ipcMain.handle('get-history', async (_event): Promise<ISongData[]> => {
+    try {
+      const getSongsFromDB = (): Promise<string[]> => {
+        // TODO: Refactor this to a helper function
+        return new Promise((resolve, reject) => {
+          db?.all('SELECT src FROM history', [], (error, rows: SongRow[]) => {
+            if (error) {
+              console.error('Error getting songs from history: ', error);
+              reject(error);
+            } else {
+              const paths: string[] = rows.map((row) => row.src);
+              resolve(paths);
+            }
+          });
+        });
+      };
+
+      const paths = await getSongsFromDB();
+      const songs: ISongData[] = [];
+
+      for (const file of paths) {
+        const metaData: mm.IAudioMetadata = await mm.parseFile(file);
+        const src = `/music/${path.basename(file)}`;
+        const songData: ISongData = { metaData, src };
+        songs.push(songData);
+      }
       return songs;
     } catch (error) {
       console.error(error);
