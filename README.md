@@ -1,4 +1,4 @@
-# artem-player
+# electron-player
 
 An Electron application with React and TypeScript
 
