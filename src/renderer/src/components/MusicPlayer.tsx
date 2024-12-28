@@ -1,11 +1,12 @@
 import { FC, useEffect, useState } from 'react';
 import { useAudio } from '../hooks/useAudio';
-import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
-import { ISongData } from '../../../types';
+import { Play, Pause, SkipBack, SkipForward, SmilePlus } from 'lucide-react';
+import { ISongData } from '../../../types.d';
 import { AudioSlider } from './UI/AudioSlider';
 import { VolumeSlider } from './UI/VolumeSlider';
 import { formatTime } from '@renderer/utils/formatTime';
 import { Buffer } from 'buffer';
+import EmotionPickerModal from './Modals/EmotionPickerModal';
 
 interface MusicPlayerProps {
   song: ISongData | null;
@@ -19,6 +20,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({ song, onPrevious, onNext }): JSX.El
   const [isMuted, setIsMuted] = useState(false);
   const [prevVolume, setPrevVolume] = useState(0.4);
   const [imageSrc, setImageSrc] = useState<string>('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     if (song) {
@@ -92,14 +94,20 @@ const MusicPlayer: FC<MusicPlayerProps> = ({ song, onPrevious, onNext }): JSX.El
                 </div>
               </div>
             </div>
-            <VolumeSlider
-              value={[volume]}
-              max={1}
-              step={0.01}
-              onValueChange={(values) => handleVolumeChange(values[0])}
-              onToggleMute={handleToggleMute}
-              isMuted={isMuted}
-            />
+
+            <div className="flex items-center gap-5">
+              <button onClick={() => setIsModalVisible(true)}>
+                <SmilePlus color="rgba(255,255,255,0.6)" />
+              </button>
+              <VolumeSlider
+                value={[volume]}
+                max={1}
+                step={0.01}
+                onValueChange={(values) => handleVolumeChange(values[0])}
+                onToggleMute={handleToggleMute}
+                isMuted={isMuted}
+              />
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm tabular-nums text-muted-foreground w-12">
@@ -118,6 +126,11 @@ const MusicPlayer: FC<MusicPlayerProps> = ({ song, onPrevious, onNext }): JSX.El
           </div>
         </div>
       </div>
+      <EmotionPickerModal
+        isVisible={isModalVisible}
+        setIsVisible={setIsModalVisible}
+        songSrc={song.src}
+      />
     </>
   );
 };

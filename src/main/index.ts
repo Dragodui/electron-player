@@ -1,4 +1,4 @@
-import { ISongData } from '../types';
+import { emotionSong, ISongData } from '../types.d';
 import fs from 'fs/promises';
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron';
 import { join } from 'path';
@@ -226,43 +226,68 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('add-song-to-history', async (_event, songSrc: string): Promise<void> => {
-    const projectRoot: string = path.resolve(__dirname, '../music');
-    const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
-    db?.serialize(() => {
-      db?.run('INSERT INTO history (src) VALUES (?)', [databaseSrc], (error) => {
-        if (error) {
-          console.error('Error while adding song to history:', error);
-        }
+  ipcMain.handle(
+    'add-song-to-history',
+    async (_event, songSrc: string, emotion: string): Promise<void> => {
+      const projectRoot: string = path.resolve(__dirname, '../music');
+      const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
+      db?.serialize(() => {
+        db?.run(
+          'INSERT INTO history (src, lastPlayed, emotion) VALUES (?, ?, ?)',
+          [databaseSrc, Date.now(), emotion],
+          (error) => {
+            if (error) {
+              console.error('Error while adding song to history:', error);
+            }
+          }
+        );
       });
-    });
+    }
+  );
+
+  ipcMain.handle('rate-song', async (_event, songSrc: string, emotion: number): Promise<void> => {
+    try {
+      const projectRoot: string = path.resolve(__dirname, '../music');
+      const databaseSrc: string = path.join(projectRoot, path.basename(songSrc));
+      db?.serialize(() => {
+        db?.run('UPDATE history SET emotion = ? WHERE src = ?', [emotion, databaseSrc], (error) => {
+          console.error(error);
+        });
+      });
+    } catch (error) {
+      console.error(error);
+    }
   });
 
-  ipcMain.handle('get-history', async (_event): Promise<ISongData[]> => {
+  ipcMain.handle('get-history', async (_event): Promise<{ song: ISongData; emotion: string }[]> => {
+    interface emotionSongRow {
+      src: string;
+      emotion: string;
+    }
+
     try {
-      const getSongsFromDB = (): Promise<string[]> => {
+      const getSongsFromDB = (): Promise<emotionSongRow[]> => {
         // TODO: Refactor this to a helper function
         return new Promise((resolve, reject) => {
-          db?.all('SELECT src FROM history', [], (error, rows: SongRow[]) => {
+          db?.all('SELECT src, emotion FROM history', [], (error, rows: emotionSongRow[]) => {
             if (error) {
               console.error('Error getting songs from history: ', error);
               reject(error);
             } else {
-              const paths: string[] = rows.map((row) => row.src);
-              resolve(paths);
+              resolve(rows);
             }
           });
         });
       };
 
-      const paths = await getSongsFromDB();
-      const songs: ISongData[] = [];
+      const rows: emotionSongRow[] = await getSongsFromDB();
+      const songs: emotionSong[] = [];
 
-      for (const file of paths) {
-        const metaData: mm.IAudioMetadata = await mm.parseFile(file);
-        const src = `/music/${path.basename(file)}`;
+      for (const file of rows) {
+        const metaData: mm.IAudioMetadata = await mm.parseFile(file.src);
+        const src = `/music/${path.basename(file.src)}`;
         const songData: ISongData = { metaData, src };
-        songs.push(songData);
+        songs.push({ song: songData, emotion: file.emotion });
       }
       return songs;
     } catch (error) {

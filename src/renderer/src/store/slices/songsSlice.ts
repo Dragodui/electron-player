@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ISongData } from '../../../../types';
+import { ISongData } from '../../../../types.d';
 
 export interface SongsState {
   songs: ISongData[];

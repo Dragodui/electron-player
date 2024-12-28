@@ -9,8 +9,11 @@ const api = {
   toggleFavorite: async (songSrc: string) => ipcRenderer.invoke('toggle-favorite-song', songSrc),
   checkIfFavorite: async (songSrc: string) => ipcRenderer.invoke('check-song-in-favorite', songSrc),
   getFavoriteSongs: async () => ipcRenderer.invoke('get-favorite-songs'),
-  addSongToHistory: async (songSrc: string) => ipcRenderer.invoke('add-song-to-history', songSrc),
+  addSongToHistory: async (songSrc: string, emotion: string) =>
+    ipcRenderer.invoke('add-song-to-history', songSrc, emotion),
   getSongsFromHistory: async () => ipcRenderer.invoke('get-history'),
+  rateSong: async (songSrc: string, emotion: string) =>
+    ipcRenderer.invoke('rate-song', songSrc, emotion)
 };
 
 if (process.contextIsolated) {

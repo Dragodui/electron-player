@@ -6,7 +6,7 @@ import PageLayout from '@renderer/components/PageLayout';
 import TrackLayout from '@renderer/components/UI/TrackLayout';
 import TrackLayoutSkeleton from '@renderer/components/UI/TrackLayoutSkeleton';
 import SearchField from '@renderer/components/UI/SearchField';
-import { ISongData } from '../../../types';
+import { ISongData } from '../../../types.d';
 
 interface HomeProps {
   songs: ISongData[];
@@ -38,10 +38,7 @@ const Home: FC<HomeProps> = ({ songs, loading, currentCategory }): JSX.Element =
   const handleCurrentSong = async (song: ISongData) => {
     try {
       dispatch(setCurrentSong(song));
-      setTimeout(async () => {
-        await api.addSongToHistory(song.src);
-        console.log('ADDED TO HISTORY');
-      }, 60 * 1000);
+      await api.addSongToHistory(song.src, '');
     } catch (error) {
       console.error(error);
     }

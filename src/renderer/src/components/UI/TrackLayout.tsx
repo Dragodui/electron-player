@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
-import { ISongData } from '../../../../types';
+import { ISongData } from '../../../../types.d';
 import { Heart } from 'lucide-react';
 
 interface TrackLayoutProps {
