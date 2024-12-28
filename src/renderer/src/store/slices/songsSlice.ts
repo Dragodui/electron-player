@@ -18,3 +18,5 @@ export const songsSlice = createSlice({
     }
   }
 });
+
+export const setSongs = songsSlice.actions.setSongs;

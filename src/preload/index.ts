@@ -2,13 +2,13 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
 
 const api = {
-  getMusicFiles: async (folderPath: string) => ipcRenderer.invoke('get-music-files', folderPath),
   selectFolder: async () => ipcRenderer.invoke('dialog:selectFolder'),
 
   //database
   getMusicFromDB: async () => ipcRenderer.invoke('get-music-db'),
   toggleFavorite: async (songSrc: string) => ipcRenderer.invoke('toggle-favorite-song', songSrc),
-  checkIfFavorite: async (songSrc: string) => ipcRenderer.invoke('check-song-in-favorite', songSrc)
+  checkIfFavorite: async (songSrc: string) => ipcRenderer.invoke('check-song-in-favorite', songSrc),
+  getFavoriteSongs: async () => ipcRenderer.invoke('get-favorite-songs')
 };
 
 if (process.contextIsolated) {

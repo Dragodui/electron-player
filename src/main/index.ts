@@ -11,6 +11,24 @@ import { initializeDB } from './db';
 let mainWindow: BrowserWindow | null = null;
 const db = initializeDB();
 
+interface SongRow {
+  src: string;
+}
+
+const getSongsFromDB = (): Promise<string[]> => {
+  return new Promise((resolve, reject) => {
+    db?.all('SELECT src FROM allSongs', [], (error, rows: SongRow[]) => {
+      if (error) {
+        console.error('Error getting songs from database: ', error);
+        reject(error);
+      } else {
+        const paths: string[] = rows.map((row) => row.src);
+        resolve(paths);
+      }
+    });
+  });
+};
+
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -60,68 +78,53 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle('get-music-db', async (event): Promise<ISongData[]> => {
-    try {
-      interface SongRow {
-        src: string;
-      }
-
-      const getSongsFromDB = (): Promise<string[]> => {
-        return new Promise((resolve, reject) => {
-          db?.all('SELECT src FROM allSongs', [], (error, rows: SongRow[]) => {
-            if (error) {
-              console.error('Error getting songs from database: ', error);
-              reject(error);
-            } else {
-              const paths: string[] = rows.map((row) => row.src);
-              resolve(paths);
-            }
-          });
-        });
-      };
-
-      const paths = await getSongsFromDB();
-      const songs: ISongData[] = [];
-
-      for (const file of paths) {
-        const metaData: mm.IAudioMetadata = await mm.parseFile(file);
-        const src = `/music/${path.basename(file)}`;
-        const songData: ISongData = { metaData, src };
-        songs.push(songData);
-      }
-
-      return songs;
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  });
-
-  ipcMain.handle('get-music-files', async (event): Promise<ISongData[]> => {
     const musicExtensions: string[] = ['.mp3', '.wav', '.flac', '.m4a', '.ogg'];
     try {
+      //songs form database
+      const paths = await getSongsFromDB();
+
+      //songs from music folder
       const projectRoot = path.resolve(__dirname, '../music');
       const files = await fs.readdir(projectRoot);
       const musicFiles = files.filter((file) =>
         musicExtensions.includes(path.extname(file).toLowerCase())
       );
-      const musicFilesPath = musicFiles.map((file) => path.join(projectRoot, file));
-      let songs: ISongData[] = [];
-      for (let file of musicFilesPath) {
-        const metaData: mm.IAudioMetadata = await mm.parseFile(file);
-        const src = `/music/${path.basename(file)}`;
-        const sqlSrc = path.join(projectRoot, path.basename(file));
+      const songs: ISongData[] = [];
 
+      if (paths.length !== musicFiles.length) {
+        //remove all from database
         db?.serialize(() => {
-          db.run(`INSERT INTO allSongs (src) VALUES (?)`, [sqlSrc], (error) => {
+          db.run(`DELETE FROM allSongs`, (error) => {
             if (error) {
-              console.error('Error inserting data into the database:', error);
+              console.error('Error deleting data from allSongs:', error);
             }
           });
         });
-        const songData: ISongData = { metaData, src };
-        songs.push(songData);
-      }
 
+        const musicFilesPath = musicFiles.map((file) => path.join(projectRoot, file));
+        for (let file of musicFilesPath) {
+          const metaData: mm.IAudioMetadata = await mm.parseFile(file);
+          const src = `/music/${path.basename(file)}`;
+          const sqlSrc = path.join(projectRoot, path.basename(file));
+
+          db?.serialize(() => {
+            db.run(`INSERT INTO allSongs (src) VALUES (?)`, [sqlSrc], (error) => {
+              if (error) {
+                console.error('Error inserting data into the database:', error);
+              }
+            });
+          });
+          const songData: ISongData = { metaData, src };
+          songs.push(songData);
+        }
+      } else {
+        for (const file of paths) {
+          const metaData: mm.IAudioMetadata = await mm.parseFile(file);
+          const src = `/music/${path.basename(file)}`;
+          const songData: ISongData = { metaData, src };
+          songs.push(songData);
+        }
+      }
       return songs;
     } catch (error) {
       console.error(error);
@@ -155,16 +158,12 @@ app.whenReady().then(() => {
           db.run('DELETE FROM favoriteSongs WHERE src = ?', [databaseSrc], (error) => {
             if (error) {
               console.error('Error while removing song from favorites:', error);
-            } else {
-              console.log('Song removed from favorites:', songSrc);
             }
           });
         } else {
           db.run('INSERT INTO favoriteSongs (src) VALUES (?)', [databaseSrc], (error) => {
             if (error) {
               console.error('Error while adding song to favorites:', error);
-            } else {
-              console.log('Song added to favorites:', songSrc);
             }
           });
         }
@@ -191,6 +190,43 @@ app.whenReady().then(() => {
     } catch (error) {
       console.error(error);
       return false;
+    }
+  });
+
+  ipcMain.handle('get-favorite-songs', async (event): Promise<ISongData[]> => {
+    try {
+      interface SongRow {
+        src: string;
+      }
+
+      const getSongsFromDB = (): Promise<string[]> => {
+        return new Promise((resolve, reject) => {
+          db?.all('SELECT src FROM favoriteSongs', [], (error, rows: SongRow[]) => {
+            if (error) {
+              console.error('Error getting songs from database: ', error);
+              reject(error);
+            } else {
+              const paths: string[] = rows.map((row) => row.src);
+              resolve(paths);
+            }
+          });
+        });
+      };
+
+      const paths = await getSongsFromDB();
+      const songs: ISongData[] = [];
+
+      for (const file of paths) {
+        const metaData: mm.IAudioMetadata = await mm.parseFile(file);
+        const src = `/music/${path.basename(file)}`;
+        const songData: ISongData = { metaData, src };
+        songs.push(songData);
+      }
+
+      return songs;
+    } catch (error) {
+      console.error(error);
+      return [];
     }
   });
 
