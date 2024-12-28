@@ -1,16 +1,21 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 interface SidebarLinkProps {
-  to: string;
-  children: React.ReactNode;
+  children: ReactNode;
+  onClick?: () => void;
+  active?: boolean;
+  to?: string;
 }
 
-const SidebarLink: FC<SidebarLinkProps> = ({ to, children }): JSX.Element => {
+const SidebarLink: FC<SidebarLinkProps> = ({ children, onClick, active, to }): JSX.Element => {
   return (
     <Link
-      className="w-full bg-[rgba(0,0,0,0.3)] text-center rounded-lg text-xl font-medium p-1"
-      to={to}
+      to={to ?? ''}
+      className={`w-full text-xl font-medium text-left py-2 px-4 rounded-md transition-colors ${
+        active ? 'bg-[#4cb3cf] text-white' : 'hover:bg-gray-800'
+      }`}
+      onClick={onClick}
     >
       {children}
     </Link>

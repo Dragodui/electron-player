@@ -9,8 +9,6 @@ export function useAudio(audioSrc: string) {
 
   useEffect(() => {
     const audio = new Audio(audioSrc);
-    console.log(audioSrc);
-    console.log(audio);
     audioRef.current = audio;
     audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
     audio.addEventListener('timeupdate', () => setCurrentTime(audio.currentTime));

@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
-import { ISongData } from '../../../../types';
+import { ISongData } from '../../../../types.d';
+import { Heart } from 'lucide-react';
 
 interface TrackLayoutProps {
   song: ISongData;
@@ -10,6 +11,18 @@ interface TrackLayoutProps {
 
 const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.Element => {
   const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const api = (window as any).api;
+
+  const ToggleFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    try {
+      e.stopPropagation();
+      await api.toggleFavorite(song.src);
+      await checkIfFavorite();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const picture = song.metaData.common.picture;
@@ -24,6 +37,19 @@ const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.El
     }
   }, [song]);
 
+  useEffect(() => {
+    checkIfFavorite();
+  }, []);
+
+  const checkIfFavorite = async () => {
+    try {
+      const isFav = await api.checkIfFavorite(song.src);
+      setIsFavorite(isFav);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const formatDuration = (duration: number | undefined) => {
     if (!duration) return '00:00';
     const minutes = Math.floor(duration / 60);
@@ -36,9 +62,9 @@ const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.El
   return (
     <div
       onClick={onClick}
-      className={`cursor-pointer flex items-center w-full gap-4 text-white p-4 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ${addStyles}`}
+      className={`cursor-pointer flex items-center w-full gap-4 text-white p-4 rounded-lg  hover:bg-[rgba(76,179,207,0.1)] transition-all duration-300 ${addStyles}`}
     >
-      <div className="flex-shrink-0 w-11 h-11 sm:w-11 sm:h-11 rounded-md overflow-hidden bg-gray-600">
+      <div className="flex-shrink-0 w-11 h-11 sm:w-11 sm:h-11 rounded-md overflow-hidden">
         {imageSrc ? (
           <img src={imageSrc} alt="Album cover" className="w-full h-full object-cover" />
         ) : (
@@ -56,16 +82,17 @@ const TrackLayout: FC<TrackLayoutProps> = ({ song, onClick, addStyles }): JSX.El
           {song.metaData.common.artist ? song.metaData.common.artist : 'Unknown Artist'}
         </p>
       </div>
-
+      <button
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => ToggleFavorite(e)}
+        className="px-2 py-2"
+      >
+        <Heart
+          color={`${isFavorite ? '#ff0061' : ''}`}
+          fill={`${isFavorite ? '#ff0061' : 'white'}`}
+        />
+      </button>
       <div className="flex items-center gap-4">
         <p className="text-sm text-gray-400">{formatDuration(song.metaData.format.duration)}</p>
-
-        {/* <button
-                    className="w-10 h-10 flex items-center justify-center bg-blue-400 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                    onClick={handlePlayPause}
-                >
-                    {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                </button> */}
       </div>
     </div>
   );

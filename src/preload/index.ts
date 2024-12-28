@@ -1,15 +1,20 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
 
-// Custom APIs for renderer
 const api = {
-  getMusicFiles: async (folderPath: string) => ipcRenderer.invoke('get-music-files', folderPath),
-  selectFolder: async () => ipcRenderer.invoke('dialog:selectFolder')
-};
+  selectFolder: async () => ipcRenderer.invoke('dialog:selectFolder'),
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
+  //database
+  getMusicFromDB: async () => ipcRenderer.invoke('get-music-db'),
+  toggleFavorite: async (songSrc: string) => ipcRenderer.invoke('toggle-favorite-song', songSrc),
+  checkIfFavorite: async (songSrc: string) => ipcRenderer.invoke('check-song-in-favorite', songSrc),
+  getFavoriteSongs: async () => ipcRenderer.invoke('get-favorite-songs'),
+  addSongToHistory: async (songSrc: string, emotion: string) =>
+    ipcRenderer.invoke('add-song-to-history', songSrc, emotion),
+  getSongsFromHistory: async () => ipcRenderer.invoke('get-history'),
+  rateSong: async (songSrc: string, emotion: string) =>
+    ipcRenderer.invoke('rate-song', songSrc, emotion)
+};
 
 if (process.contextIsolated) {
   try {
