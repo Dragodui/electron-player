@@ -174,14 +174,18 @@ const MoodStats: FC<MoodStatsProps> = ({ history }): JSX.Element => {
   return (
     <div>
       <Line data={chartData} options={chartOptions} />
-     <div className='mt-4 flex items-center gap-2'>
-     <h2 className="text-2xl font-medium">
-        {averageMood !== 0
-          ? `Your average mood: ${emotions[averageMood].name}`
-          : 'not enough data'}
-      </h2>
-      {averageMood !== 0 ? <p className='relative top-[3px]'>{emotions[averageMood].icon}</p> : ''}
-     </div>
+      <div className="mt-4 flex items-center gap-2">
+        <h2 className="text-2xl font-medium">
+          {averageMood !== 0
+            ? `Your average mood: ${emotions[averageMood - 1].name}`
+            : 'not enough data'}
+        </h2>
+        {averageMood !== 0 ? (
+          <p className="relative top-[3px]">{emotions[averageMood - 1].icon}</p>
+        ) : (
+          ''
+        )}
+      </div>
     </div>
   );
 };

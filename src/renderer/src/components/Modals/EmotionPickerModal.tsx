@@ -17,23 +17,23 @@ const EmotionPickerModal: FC<EmotionPickerModalProps> = ({ isVisible, setIsVisib
   const [selectedEmotion, setSelectedEmotion] = React.useState<string>('');
   const emotions: Emotion[] = [
     {
-      icon: <Frown color="rgba(255,255,255,0.6)" width={30} height={30} />,
+      icon: <Frown color="rgba(255,255,255,0.6)" width={50} height={50} />,
       name: 'sad'
     },
     {
-      icon: <Annoyed color="rgba(255,255,255,0.6)" width={30} height={30} />,
+      icon: <Annoyed color="rgba(255,255,255,0.6)" width={50} height={50} />,
       name: 'annoyed'
     },
     {
-      icon: <Meh color="rgba(255,255,255,0.6)" width={30} height={30} />,
+      icon: <Meh color="rgba(255,255,255,0.6)" width={50} height={50} />,
       name: 'neutral'
     },
     {
-      icon: <Smile color="rgba(255,255,255,0.6)" width={30} height={30} />,
+      icon: <Smile color="rgba(255,255,255,0.6)" width={50} height={50} />,
       name: 'good'
     },
     {
-      icon: <Laugh color="rgba(255,255,255,0.6)" width={30} height={30} />,
+      icon: <Laugh color="rgba(255,255,255,0.6)" width={50} height={50} />,
       name: 'happy'
     }
   ];
@@ -53,7 +53,7 @@ const EmotionPickerModal: FC<EmotionPickerModalProps> = ({ isVisible, setIsVisib
       onClick={() => setIsVisible(false)}
       className={`right-0 left-0 top-0 bottom-0 bg-black bg-opacity-50 fixed flex items-center justify-center ${isVisible ? 'flex' : 'hidden'}`}
     >
-      <div className=" bg-[#1f2937] py-4 px-6 rounded-lg">
+      <div className=" bg-[#1f2937] py-4 px-6 rounded-lg flex flex-col items-center">
         <h1 className="text-3xl text-center font-bold mb-5">select your emotion</h1>
         <div className="flex items-center gap-3">
           {emotions.map((emotion) => (
