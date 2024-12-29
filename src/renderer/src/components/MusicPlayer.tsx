@@ -16,7 +16,7 @@ interface MusicPlayerProps {
 
 const MusicPlayer: FC<MusicPlayerProps> = ({ song, onPrevious, onNext }): JSX.Element => {
   const { isPlaying, duration, currentTime, volume, togglePlay, handleVolumeChange, handleSeek } =
-    useAudio(song ? song.src : '');
+    useAudio(song ? song.src : '', onNext);
   const [isMuted, setIsMuted] = useState(false);
   const [prevVolume, setPrevVolume] = useState(0.4);
   const [imageSrc, setImageSrc] = useState<string>('');

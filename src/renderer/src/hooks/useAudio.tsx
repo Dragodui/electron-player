@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export function useAudio(audioSrc: string) {
+export function useAudio(audioSrc: string, onNext?: () => void) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -10,15 +10,30 @@ export function useAudio(audioSrc: string) {
   useEffect(() => {
     const audio = new Audio(audioSrc);
     audioRef.current = audio;
-    audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
-    audio.addEventListener('timeupdate', () => setCurrentTime(audio.currentTime));
+
+    // Обработчики событий
+    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      if (onNext) onNext(); // Вызов onNext при завершении трека
+    };
+
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+
     audio.play();
     setIsPlaying(true);
+
     return () => {
       audio.pause();
       audio.src = '';
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
     };
-  }, [audioSrc]);
+  }, [audioSrc, onNext]);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -52,6 +67,6 @@ export function useAudio(audioSrc: string) {
     volume,
     togglePlay,
     handleVolumeChange,
-    handleSeek
+    handleSeek,
   };
 }
