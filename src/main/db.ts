@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { dirname, join  } from 'path';
-=======
 import { dirname, join } from 'path';
->>>>>>> 18ad7a1de632c9ad762803e4ec0bddfcceb7bf0c
 import fs from 'fs';
 import sqlite3, { Database } from 'sqlite3';
 import { fileURLToPath } from 'url';
