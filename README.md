@@ -1,6 +1,6 @@
 # electron-player
 
-An Electron application with React and TypeScript
+A music player application with emotional tracker written React and TypeScript
 
 ## Recommended IDE Setup
 
