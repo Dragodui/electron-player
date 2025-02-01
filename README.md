@@ -32,3 +32,9 @@ $ npm run build:mac
 # For Linux
 $ npm run build:linux
 ```
+
+![image](https://github.com/user-attachments/assets/1dda516d-03ba-447a-9ee8-a2a760fc92cd)
+![image](https://github.com/user-attachments/assets/c974d67e-4f5a-4620-b92c-bf1eff23e2bb)
+
+
+
