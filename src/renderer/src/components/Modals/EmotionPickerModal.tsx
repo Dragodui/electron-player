@@ -1,5 +1,5 @@
 import { Annoyed, Frown, Laugh, Meh, Smile } from 'lucide-react';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 interface Emotion {
   icon: JSX.Element;
@@ -14,7 +14,6 @@ interface EmotionPickerModalProps {
 
 const EmotionPickerModal: FC<EmotionPickerModalProps> = ({ isVisible, setIsVisible, songSrc }) => {
   const api = (window as any).api;
-  const [selectedEmotion, setSelectedEmotion] = React.useState<string>('');
   const emotions: Emotion[] = [
     {
       icon: <Frown color="rgba(255,255,255,0.6)" width={50} height={50} />,
@@ -40,7 +39,6 @@ const EmotionPickerModal: FC<EmotionPickerModalProps> = ({ isVisible, setIsVisib
 
   const handleEmotionClick = async (emotion: Emotion) => {
     try {
-      setSelectedEmotion(emotion.name);
       await api.rateSong(songSrc, emotion.name);
       setIsVisible(false);
     } catch (error) {

@@ -85,7 +85,7 @@ const MoodStats: FC<MoodStatsProps> = ({ history }): JSX.Element => {
     datasets: [
       {
         label: 'Mood Changes',
-        data: history.map((song) => {
+        data: history.map((song: emotionSong) => {
           switch (song.emotion) {
             case 'happy':
               return 5;
@@ -97,6 +97,8 @@ const MoodStats: FC<MoodStatsProps> = ({ history }): JSX.Element => {
               return 2;
             case 'sad':
               return 1;
+            default:
+              return 0;
           }
         }),
         borderColor: 'rgba(76, 179, 207, 1)',
@@ -162,6 +164,8 @@ const MoodStats: FC<MoodStatsProps> = ({ history }): JSX.Element => {
                 return 'Good';
               case 5:
                 return 'Happy';
+              default:
+                return 'Not rated';
             }
           }
         },
